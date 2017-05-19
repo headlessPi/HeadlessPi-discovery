@@ -50,13 +50,27 @@ var DiscoveryApp = function() {
     //  Process on exit and signals.
     process.on('exit', function() { self.terminator(); });
 
-    // Removed 'SIGPIPE' from the list - bugz 852598.
     ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
      'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
     ].forEach(function(element, index, array) {
         process.on(element, function() { self.terminator(element); });
     });
   };
+
+  /**
+   *  Remove devices that are inactive
+   */
+  self.cullData = function(){
+    console.log("Culling Data");
+    var cutoff = (new Date()).getTime() - 21600000; // 6 hours
+    Object.keys(data).forEach(function(group){
+      Object.keys(data[group]).forEach(function(id){
+        if(data[group][id].updated.getTime() < cutoff){
+          delete data[group][id];
+        }
+      });
+    });
+  }
 
 
   /*  ================================================================  */
@@ -105,7 +119,6 @@ var DiscoveryApp = function() {
     self.app.get('/devices.json', function(req, res){ self.discover(req, res, 'json')});
   };
 
-
   /**
    *  Initializes the application.
    */
@@ -118,7 +131,6 @@ var DiscoveryApp = function() {
     self.initializeServer();
   };
 
-
   /**
    *  Start the server
    */
@@ -127,6 +139,7 @@ var DiscoveryApp = function() {
     self.app.listen(self.port, self.ipaddress, function() {
       console.log('%s: Node server started on %s:%d ...', Date(Date.now() ), self.ipaddress, self.port);
     });
+    setInterval(function(){ self.cullData() }, 3600000);
   };
 
 };
