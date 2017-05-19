@@ -37,7 +37,7 @@ var DiscoveryApp = function() {
    */
   self.terminator = function(sig){
     if (typeof sig === "string") {
-      console.log('%s: Received %s - terminating sample app ...', Date(Date.now()), sig);
+      console.log('%s: Received %s - terminating app ...', Date(Date.now()), sig);
       process.exit(1);
     }
     console.log('%s: Node server stopped.', Date(Date.now()) );
@@ -72,11 +72,13 @@ var DiscoveryApp = function() {
   
   self.discover = function(req, res, format){
     var devices = [];
-    Object.keys(data[req.ip]).forEach((id) => {
-      var device = data[req.ip][id];
-      device.id = id;
-      devices.push(device);
-    });
+    if(data[req.ip]){
+      Object.keys(data[req.ip]).forEach((id) => {
+        var device = data[req.ip][id];
+        device.id = id;
+        devices.push(device);
+      });
+    }
     // Fetch all devices on this network
     if(format === 'html'){
       res.setHeader('Content-Type', 'text/html');
