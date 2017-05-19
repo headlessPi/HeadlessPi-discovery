@@ -73,7 +73,7 @@ var DiscoveryApp = function() {
   self.discover = function(req, res, format){
     var devices = [];
     if(data[req.ip]){
-      Object.keys(data[req.ip]).forEach((id) => {
+      Object.keys(data[req.ip]).forEach(function(id){
         var device = data[req.ip][id];
         device.id = id;
         devices.push(device);
