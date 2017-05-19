@@ -103,9 +103,9 @@ li h2{
 
 var devices = <%- JSON.stringify(devices) %>
 
-function selectMirobot(device){
+function selectDevice(id){
   for(var i = 0; i< devices.length; i++){
-    if(devices[i].name === device){
+    if(devices[i].id === id){
       document.querySelector('#frame').src="http://" + devices[i].address + '/';
       document.querySelector('#frame').className = '';
       document.querySelector('#main').className = 'hidden';
@@ -115,7 +115,7 @@ function selectMirobot(device){
 
 function checkURL(){
   if(window.location.hash){
-    selectMirobot(window.location.hash.replace('#', ''));
+    selectDevice(window.location.hash.replace('#', ''));
   }
 }
 
@@ -130,19 +130,20 @@ document.addEventListener("DOMContentLoaded", checkURL);
 <% }else{ %>
   <div id="main">
     <header>
-      <img src="logo.gif" alt="Mirobot" />
+      <h1>headlessPi Discovery</h1>
     </header>
     <div id="content">
 <%   if(devices.length === 0){ %>
-    <p>No Mirobots were found on your network.</p>
+    <p>No devices were found on your network.</p>
+    <p>Make sure you've joined your Raspberry Pi to your WiFi network then check back here</p>
     <p><a href="http://learn.mirobot.io/docs/get-mirobot-on-the-network/">Here's how to get started...</a></p>
 <%   }else{ %>
-    <h1>Choose your Mirobot</h1>
+    <h1>Choose your device:</h1>
     <ul>
-    <% devices.forEach(function(robot){ %>
+    <% devices.forEach(function(device){ %>
       <li>
-        <a class="icon" href="#<%= robot.name %>" onclick="selectMirobot('<%= robot.name %>')">&nbsp;</a>
-        <a href="#<%= robot.name %>" onclick="selectMirobot('<%= robot.name %>')"><h2><%= robot.name %></h2></a>
+        <a class="icon" href="#<%= device.id %>" onclick="selectDevice('<%= device.id %>')">&nbsp;</a>
+        <a href="#<%= device.id %>" onclick="selectDevice('<%= device.id %>')"><h2><%= device.name %> (ID: <% device.id %>)</h2></a>
       </li>
     <% }); %>
     </ul>

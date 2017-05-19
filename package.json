@@ -1,30 +1,24 @@
 {
-  "name": "Mirobot-Discovery",
+  "name": "headlessPi-discovery",
   "version": "1.0.0",
-  "description": "Mirobot discovery app",
+  "description": "headless Pi Raspberry discovery app",
   "keywords": [
-    "Mirobot",
+    "headlessPi",
     "Node.js"
   ],
   "author": {
     "name": "Ben Pirt",
     "email": "ben@pirt.co.uk",
-    "url": "http://mirobot.io/"
+    "url": "http://mime.co.uk/"
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://mime.co.uk",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
-  },
-
-  "engines": {
-    "node": ">= 0.6.0",
-    "npm": ">= 1.0.0"
+    "url": "https://github.com/headlessPi/headlessPi-discovery"
   },
 
   "dependencies": {
     "express": "~3.4.4",
-    "redis": "~2.4.2",
     "ejs": "~2.4.1",
     "cors": "~2.7.1"
   },

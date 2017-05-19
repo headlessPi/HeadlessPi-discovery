@@ -3,30 +3,11 @@
 var express = require('express');
 var fs      = require('fs');
 var ejs     = require('ejs');
-var r       = require("redis");
 var cors    = require('cors');
 
-
-var redis_conf = {
-  host: (process.env.OPENSHIFT_REDIS_HOST || 'localhost'),
-  port: (process.env.OPENSHIFT_REDIS_PORT || 6379),
-  password: process.env.REDIS_PASSWORD
-}
-var redis = r.createClient(redis_conf);
-if(redis_conf.password) redis.auth(redis_conf.password);
-
-redis.on("error", function (err) {
-  console.log("" + err);
-});
-
-/**
- *  Define the sample application.
- */
 var DiscoveryApp = function() {
-
-  //  Scope.
   var self = this;
-
+  var data = {};
 
   /*  ================================================================  */
   /*  Helper functions.                                                 */
@@ -48,7 +29,6 @@ var DiscoveryApp = function() {
     };
   };
 
-
   /**
    *  Populate the cache.
    */
@@ -56,7 +36,6 @@ var DiscoveryApp = function() {
     //  Local cache for static content.
     self.indexPage = fs.readFileSync('./index.html').toString('utf8');
   };
-
 
   /**
    *  terminator === the termination handler
@@ -70,7 +49,6 @@ var DiscoveryApp = function() {
     }
     console.log('%s: Node server stopped.', Date(Date.now()) );
   };
-
 
   /**
    *  Setup termination handlers (for exit and a list of signals).
@@ -89,98 +67,35 @@ var DiscoveryApp = function() {
 
 
   /*  ================================================================  */
-  /*  App server functions (main app logic here).                       */
+  /*  App server functions                                              */
   /*  ================================================================  */
   
   self.addAddress = function(req, res){
-    // store IP address and name in redis under the address key
-    redis.zadd(req.ip, Date.now(), req.query.name + '|' + req.query.address, function(err, reply){
-      if(err){
-        res.send(500);
-      }else{
-        res.send(204);
-      }
-    });
-  }
-  
-  function parseSet(data){
-    var out = [];
-    for(var i = 0; i< data.length; i+= 2){
-      out.push({
-        key: data[i],
-        name: data[i].split('|')[0],
-        address: data[i].split('|')[1],
-        last_seen: Number(data[i+1])
-      });
-    }
-    return out;
-  }
-  
-  function getData(key, cb){
-    redis.zrange(key, 0, -1, 'withscores', function(err, resp) {
-      if(err) return cb(err);
-      var data = parseSet(resp);
-      var m = redis.multi();
-      // Filter out devices older than 60 minutes
-      var cutoff = Date.now() - (1000 * 60 * 60);
-      for(var i = data.length - 1; i >= 0; i--){
-        if(data[i].last_seen < cutoff){
-          m.zrem(key, data[i].key);
-          data.splice(i, 1);
-        }
-      };
-      
-      // Filter out devices with the same name in case it's just changed IP address
-      var valid = {};
-      for(var i = data.length - 1; i >= 0; i--){
-        if(valid[data[i].name]){
-          if(valid[data[i].name].last_seen < data[i].last_seen){
-            //delete the other record
-            data.splice(valid[data[i].name].id, 1);
-            m.zrem(key, valid[data[i].name].key);
-            //and put in the new one
-            valid[data[i].name] = data[i];
-            valid[data[i].name].id = i;
-          }else{
-            //delete this record
-            m.zrem(key, data[i].key);
-            data.splice(i, 1);
-          }
-        }else{
-          valid[data[i].name] = data[i];
-        }
-      };
-      
-      m.exec(function(err, replies){
-        data.map(function(el){
-          delete el.key;
-          delete el.id;
-        })
-        cb(err, data);
-      });
-    });
+    // store IP address and name in hash under the address key
+    if(typeof data[req.ip] === 'undefined') data[req.ip] = {};
+    data[req.ip][req.query.id] = {name: req.query.name, updated: new Date(), address: req.query.address};
+    res.sendStatus(200);
   }
   
   self.discover = function(req, res, format){
-    // Fetch all devices on this network
-    getData(req.ip, function(err, data){
-      if(err){
-        res.send(500);
-      }else{
-        if(format === 'html'){
-          res.setHeader('Content-Type', 'text/html');
-          res.send(ejs.render(self.indexPage, {devices: data}));
-        }else if(format === 'json'){
-          res.setHeader('Content-Type', 'application/json');
-          res.send(JSON.stringify({devices: data}));
-        }
-      }
+    var devices = [];
+    Object.keys(data[req.ip]).forEach((id) => {
+      var device = data[req.ip][id];
+      device.id = id;
+      devices.push(device);
     });
+    // Fetch all devices on this network
+    if(format === 'html'){
+      res.setHeader('Content-Type', 'text/html');
+      res.send(ejs.render(self.indexPage, {devices: devices}));
+    }else if(format === 'json'){
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({devices: data}));
+    }
   }
 
   /**
-   *  Initialize the server (express) and create the routes and register
-   *  the handlers.
+   *  Initialize the server, create the routes and register the handlers.
    */
   self.initializeServer = function() {
     self.app = express();
@@ -197,7 +112,7 @@ var DiscoveryApp = function() {
 
 
   /**
-   *  Initializes the sample application.
+   *  Initializes the application.
    */
   self.initialize = function() {
     self.setupVariables();
@@ -210,7 +125,7 @@ var DiscoveryApp = function() {
 
 
   /**
-   *  Start the server (starts up the sample application).
+   *  Start the server
    */
   self.start = function() {
     //  Start the app on the specific interface (and port).
