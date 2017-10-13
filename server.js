@@ -16,19 +16,8 @@ var DiscoveryApp = function() {
   /**
    *  Set up server IP address and port # using env variables/defaults.
    */
-  self.setupVariables = function() {
-    //  Set the environment variables we need.
-    self.ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-    self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-  };
-
-  /**
-   *  Populate the cache.
-   */
-  self.populateCache = function() {
-    //  Local cache for static content.
-    self.indexPage = fs.readFileSync('./index.html').toString('utf8');
-  };
+  self.ipaddress = '127.0.0.1';
+  self.port      = process.env.PORT || 8080;
 
   /**
    *  terminator === the termination handler
@@ -71,6 +60,16 @@ var DiscoveryApp = function() {
       });
     });
   }
+  
+  var staticCache = {};
+  var getStaticFile = function(file, cb){
+    if(typeof staticCache[file] !== 'undefined') return cb(null, staticCache[file]);
+    fs.readFile(file, function(err, data){
+      if(err) return cb(err);
+      staticCache[file] = data.toString('utf8')
+      cb(null, staticCache[file]);
+    })
+  }
 
 
   /*  ================================================================  */
@@ -86,7 +85,8 @@ var DiscoveryApp = function() {
   
   self.discover = function(req, res, format){
     var devices = [];
-    if(data[req.ip]){
+    var host = req.headers.host.split(':')[0];
+    if(typeof data[req.ip] !== 'undefined'){
       Object.keys(data[req.ip]).forEach(function(id){
         var device = data[req.ip][id];
         device.id = id;
@@ -96,7 +96,14 @@ var DiscoveryApp = function() {
     // Fetch all devices on this network
     if(format === 'html'){
       res.setHeader('Content-Type', 'text/html');
-      res.send(ejs.render(self.indexPage, {devices: devices}));
+      getStaticFile('./static/' + host + '/index.html', (err, file) => {
+        if(err){
+          console.log(err);
+          res.send(500);
+        }else{
+          res.send(ejs.render(file, {devices: devices}));
+        }
+      });
     }else if(format === 'json'){
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({devices: data}));
@@ -110,7 +117,7 @@ var DiscoveryApp = function() {
     self.app = express();
 
     self.app.set('trust proxy', true);
-    self.app.use(express.static('assets'));
+    self.app.use(express.static('static/assets'));
     self.app.use(cors());
 
     //  Add handlers for the app (from the routes).
@@ -123,8 +130,6 @@ var DiscoveryApp = function() {
    *  Initializes the application.
    */
   self.initialize = function() {
-    self.setupVariables();
-    self.populateCache();
     self.setupTerminationHandlers();
 
     // Create the express server and routes.
@@ -136,7 +141,7 @@ var DiscoveryApp = function() {
    */
   self.start = function() {
     //  Start the app on the specific interface (and port).
-    self.app.listen(self.port, self.ipaddress, function() {
+    self.app.listen(self.port, function() {
       console.log('%s: Node server started on %s:%d ...', Date(Date.now() ), self.ipaddress, self.port);
     });
     setInterval(function(){ self.cullData() }, 3600000);

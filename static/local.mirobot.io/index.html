@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="icon" href="/favicon.ico">
+  <title>Mirobot</title>
+  <style>
+
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+}
+
+h1{
+  margin:0;
+}
+
+.hidden{
+  display:none !important;
+}
+
+#frame{
+  display:block;
+  border:none;
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+}
+
+header{
+  position:fixed;
+  z-index:99999;
+  background:#fff;
+  top:0;
+  left:0;
+  right:0;
+  padding:10px 40px;
+  vertical-align:top;
+  -webkit-box-shadow:0px 0px 12px -4px rgba(0, 0, 0, 0.6);
+  -moz-box-shadow:0px 0px 12px -4px rgba(0, 0, 0, 0.6);
+  box-shadow:0px 0px 12px -4px rgba(0, 0, 0, 0.6);
+}
+#content{
+  padding:90px 40px;
+  background-color:#FAFAFA;
+}
+p{
+  font-size:125%;
+}
+h1{
+  font-size:100%;
+}
+
+ul{
+  margin:0;
+  padding:0;
+}
+li{
+  display:block;
+  width: 244px;
+  display: inline-block;
+  vertical-align: top;
+  background: #FFF;
+  margin:10px;
+  height: 220px;
+  text-align:left;
+  border:3px solid #FAFAFA;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0 0 12px 0  rgba(0,0,0,0.4);
+  -moz-box-shadow: 0 0 12px 0  rgba(0,0,0,0.4);
+  box-shadow: 0 0 12px 0 rgba(0,0,0,0.4);
+}
+li .icon{
+  display:block;
+  width:244px;
+  height:150px;
+  -webkit-border-top-left-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background:url('icon.jpg');
+}
+li a{
+  text-decoration:none;
+}
+li h2{
+  font-size: 150%;
+  font-weight:bold;
+  color:#333;
+  padding:5px;
+}
+
+  </style>
+  <script>
+
+var devices = <%- JSON.stringify(devices) %>
+
+function selectMirobot(device){
+  for(var i = 0; i< devices.length; i++){
+    if(devices[i].name === device){
+      document.querySelector('#frame').src="http://" + devices[i].address + '/';
+      document.querySelector('#frame').className = '';
+      document.querySelector('#main').className = 'hidden';
+    }
+  }
+}
+
+function checkURL(){
+  if(window.location.hash){
+    selectMirobot(window.location.hash.replace('#', ''));
+  }
+}
+
+document.addEventListener("DOMContentLoaded", checkURL);
+
+  </script>
+
+</head>
+<body>
+<% if(devices.length === 1){ %>
+  <iframe src="http://<%= devices[0].address %>" id="frame"/>
+<% }else{ %>
+  <div id="main">
+    <header>
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="40px" viewBox="0 0 327.356 71.3" enable-background="new 0 0 327.356 71.3" xml:space="preserve">
+<path fill="#082D68" d="M128.242,64.335c-1.947,0-3.417-1.422-3.417-3.309V13.439c0-0.348-0.036-0.559-0.068-0.679
+	c-0.06,0.102-0.167,0.3-0.284,0.666L109.12,61.464c-0.583,1.824-2.048,2.871-4.021,2.871c-2.044,0-3.53-1.057-4.077-2.895
+	L86.717,13.428c-0.118-0.395-0.229-0.601-0.3-0.702c-0.031,0.093-0.084,0.302-0.084,0.713v47.59c0,1.885-1.47,3.307-3.417,3.307
+	c-1.963,0-3.441-1.422-3.441-3.307V13.068c0-3.81,3.143-6.907,7.006-6.907c3.188,0,5.822,1.869,6.71,4.762l11.979,40.323
+	l12.805-40.493c0.889-2.708,3.645-4.592,6.705-4.592c3.864,0,7.006,3.098,7.006,6.907v47.961
+	C131.685,62.914,130.205,64.335,128.242,64.335z"/>
+<path fill="#082D68" d="M146.587,64.339c-1.927,0-3.271-1.297-3.271-3.152V24.796c0-1.933,1.345-3.283,3.271-3.283
+	c1.91,0,3.35,1.411,3.35,3.283v36.391C149.937,63.013,148.528,64.339,146.587,64.339z M146.587,14.504
+	c-1.927,0-3.271-1.296-3.271-3.152V9.794c0-1.871,1.376-3.23,3.271-3.23c1.91,0,3.35,1.389,3.35,3.23v1.558
+	C149.937,13.178,148.528,14.504,146.587,14.504z"/>
+<path fill="#082D68" d="M162.041,64.337c-1.943,0-3.301-1.297-3.301-3.152V23.747c0-1.861,1.113-3.018,2.906-3.018
+	c1.803,0,2.912,1.105,2.965,2.959l0.022,0.777c2.488-2.509,6.078-3.736,10.887-3.736h2.467c1.958,0,3.379,1.303,3.379,3.099
+	c0,1.782-1.354,3.075-3.225,3.075h-2.621c-8.373,0-10.131,5.759-10.131,10.591v23.689C165.389,63.011,163.981,64.337,162.041,64.337
+	z"/>
+<path fill="#082D68" d="M197.715,64.66c-8.397,0-14.494-6.285-14.494-14.947V37.341c0-8.98,6.23-15.751,14.494-15.751h4.909
+	c8.249,0,14.47,6.771,14.47,15.751v12.371c0,8.662-6.085,14.947-14.47,14.947H197.715z M197.716,27.61
+	c-4.458,0-7.82,4.01-7.82,9.329V49.98c0,5.082,3.215,8.633,7.819,8.633h4.909c4.545,0,7.844-3.631,7.844-8.633V36.939
+	c0-5.318-3.371-9.328-7.844-9.328L197.716,27.61L197.716,27.61z"/>
+<path fill="#082D68" d="M229.222,64.339c-2.491,0-4.598-2.051-4.598-4.479V9.397c0-1.811,1.462-3.229,3.324-3.229
+	c1.909,0,3.351,1.389,3.351,3.229v12.138h12.028c6.842,0,13.765,4.946,13.765,14.4V48.22c0,6.48-3.707,16.119-13.919,16.119H229.222
+	z M243.174,57.902c4.199,0,7.246-4.17,7.246-9.916v-12.05c0-5.115-3.604-8.172-7.092-8.172H231.3v30.14h11.874V57.902z"/>
+<path fill="#082D68" d="M277.758,64.66c-8.396,0-14.494-6.285-14.494-14.947V37.341c0-8.98,6.231-15.751,14.494-15.751h4.91
+	c8.248,0,14.469,6.771,14.469,15.751v12.371c0,8.662-6.086,14.947-14.469,14.947H277.758z M277.758,27.61
+	c-4.457,0-7.818,4.01-7.818,9.329V49.98c0,5.082,3.215,8.633,7.818,8.633h4.91c4.545,0,7.844-3.631,7.844-8.633V36.939
+	c0-5.318-3.373-9.328-7.844-9.328L277.758,27.61L277.758,27.61z"/>
+<path fill="#082D68" d="M321.044,65.144c-8.896,0-13.221-4.693-13.221-14.35V27.926h-3.349c-1.877,0-3.293-1.355-3.293-3.152
+	c0-1.873,1.385-3.232,3.293-3.232h3.349v-5.843c0-1.811,1.471-3.229,3.348-3.229c1.865,0,3.326,1.419,3.326,3.229v5.845h9.401
+	c2.004,0,3.457,1.359,3.457,3.23c0,1.826-1.397,3.152-3.325,3.152h-9.533v22.869c0,5.846,1.715,7.916,6.547,7.916h2.986
+	c1.896,0,3.325,1.41,3.325,3.281c0,1.826-1.397,3.15-3.325,3.15h-2.986V65.144z"/>
+<path fill="#082D68" d="M36.012,0.001c-19.657,0-35.65,15.99-35.65,35.648c0,19.659,15.993,35.651,35.65,35.651
+	s35.648-15.992,35.648-35.651C71.661,15.991,55.669,0.001,36.012,0.001z M64.238,27.173L42.7,48.71l-9.823-9.824l24.021-24.022
+	C60.275,18.256,62.826,22.468,64.238,27.173z M25.552,31.562L48.263,8.851c1.131,0.518,2.225,1.103,3.272,1.754l-23.471,23.47
+	L25.552,31.562z M34.488,50.119H24.143V39.773L34.488,50.119z M36.011,65.123c-16.276,0-29.47-13.195-29.47-29.471
+	c0-16.276,13.193-29.471,29.47-29.471c1.666,0,3.298,0.146,4.889,0.411L18.336,29.156c-0.639,0.638-0.996,1.503-0.996,2.405v21.96
+	c0,1.879,1.522,3.4,3.4,3.4h21.958c0.902,0,1.769-0.357,2.405-0.996l20.375-20.375c0,0.033,0.002,0.066,0.002,0.101
+	C65.482,51.927,52.288,65.123,36.011,65.123z"/>
+</svg></header>
+    <div id="content">
+<%   if(devices.length === 0){ %>
+    <p>No Mirobots were found on your network.</p>
+    <p><a href="http://learn.mirobot.io/docs/get-mirobot-on-the-network/">Here's how to get started...</a></p>
+<%   }else{ %>
+    <h1>Choose your Mirobot</h1>
+    <ul>
+    <% devices.forEach(function(robot){ %>
+      <li>
+        <a class="icon" href="#<%= robot.name %>" onclick="selectMirobot('<%= robot.name %>')">&nbsp;</a>
+        <a href="#<%= robot.name %>" onclick="selectMirobot('<%= robot.name %>')"><h2><%= robot.name %></h2></a>
+      </li>
+    <% }); %>
+    </ul>
+    </div>
+<%   } %>
+  </div>
+  <iframe src="" id="frame" class="hidden"></iframe>
+<% } %>
+</body>
+</html>
