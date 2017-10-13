@@ -64,9 +64,9 @@ var DiscoveryApp = function() {
   var staticCache = {};
   var getStaticFile = function(file, cb){
     if(typeof staticCache[file] !== 'undefined') return cb(null, staticCache[file]);
-    fs.readFile(file, function(err, data){
+    fs.readFile(file, function(err, f){
       if(err) return cb(err);
-      staticCache[file] = data.toString('utf8')
+      staticCache[file] = f.toString('utf8')
       cb(null, staticCache[file]);
     })
   }
@@ -79,7 +79,7 @@ var DiscoveryApp = function() {
   self.addAddress = function(req, res){
     // store IP address and name in hash under the address key
     if(typeof data[req.ip] === 'undefined') data[req.ip] = {};
-    data[req.ip][req.query.id] = {name: req.query.name, updated: new Date(), address: req.query.address};
+    data[req.ip][req.query.id || req.query.name] = {name: req.query.name, updated: new Date(), address: req.query.address};
     res.sendStatus(200);
   }
   
@@ -106,7 +106,7 @@ var DiscoveryApp = function() {
       });
     }else if(format === 'json'){
       res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify({devices: data}));
+      res.send(JSON.stringify({devices: devices}));
     }
   }
 
