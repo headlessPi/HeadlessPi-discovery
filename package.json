@@ -1,5 +1,5 @@
 {
-  "name": "headlessPi-discovery",
+  "name": "mime-discovery",
   "version": "1.0.0",
   "description": "headless Pi Raspberry discovery app",
   "keywords": [
@@ -14,9 +14,8 @@
   "homepage": "http://mime.co.uk",
   "repository": {
     "type": "git",
-    "url": "https://github.com/headlessPi/headlessPi-discovery"
+    "url": "https://github.com/mimeindustries/mime-discovery"
   },
-
   "dependencies": {
     "express": "~3.4.4",
     "ejs": "~2.4.1",
@@ -27,6 +26,5 @@
   "scripts": {
     "start": "node server.js"
   },
-  "private": true,
   "main": "server.js"
 }
