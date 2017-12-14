@@ -80,7 +80,7 @@ var DiscoveryApp = function() {
     // store IP address and name in hash under the address key
     if(typeof data[req.ip] === 'undefined') data[req.ip] = {};
     data[req.ip][req.query.id || req.query.name] = {name: req.query.name, updated: new Date(), address: req.query.address};
-    res.sendStatus(200);
+    res.send(200);
   }
   
   self.discover = function(req, res, format){
