@@ -125,6 +125,9 @@ document.addEventListener("DOMContentLoaded", checkURL);
 
 </head>
 <body>
+<% if(devices.length === 1){ %>
+  <iframe src="http://<%= devices[0].address %>" id="frame"/>
+<% }else{ %>
   <div id="main">
     <header>
       <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -177,5 +180,6 @@ document.addEventListener("DOMContentLoaded", checkURL);
 <%   } %>
   </div>
   <iframe src="" id="frame" class="hidden"></iframe>
+<% } %>
 </body>
 </html>
